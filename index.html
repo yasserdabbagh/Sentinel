@@ -1,0 +1,688 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sentinel – MVP | KSA Construction Risk Intelligence</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.plot.ly/plotly-2.27.0.min.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;700&display=swap" rel="stylesheet">
+    
+    <!-- Chosen Palette: Sand & Stone (Warm Neutrals with Earthy Accents) -->
+    <!-- Application Structure Plan: A vertical dashboard layout designed for executive consumption. 
+         1. Hero Section: Immediate high-level status (PERI Score & Outlook).
+         2. Macro Intelligence: Deep dive into the PERI drivers using breakdown charts.
+         3. The Risk Landscape: A visual matrix (Heatmap) of the 18 clusters to identify hotspots, paired with a Top 10 list.
+         4. Operational Pulse: A Radar chart to assess sector health across 10 vectors.
+         5. Forward-Looking Simulator: An interactive section allowing users to toggle scenarios (Base vs. Crisis) to see projected impacts.
+         6. Action Center: Automated recommendations based on the current state.
+         This structure moves from "What is happening?" to "Why?" to "What's next?" and finally "What do we do?". -->
+    
+    <!-- CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
+
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Outfit', 'sans-serif'],
+                    },
+                    colors: {
+                        bg: '#F9F8F6', // Warm off-white
+                        card: '#FFFFFF',
+                        text: {
+                            main: '#4A4A40', // Dark Olive Grey
+                            sub: '#787870', // Medium Grey
+                            accent: '#BC6C25', // Earthy Bronze/Orange
+                            dark: '#283618', // Deep Green/Black
+                        },
+                        status: {
+                            safe: '#A3B18A', // Sage Green
+                            caution: '#E9C46A', // Sand Yellow
+                            warning: '#F4A261', // Muted Orange
+                            critical: '#BC6C25', // Burnt Sienna
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        body {
+            background-color: #F9F8F6;
+            color: #4A4A40;
+        }
+        
+        /* Custom Chart Container Styling */
+        .chart-container {
+            position: relative;
+            width: 100%;
+            margin-left: auto;
+            margin-right: auto;
+            /* Default heights */
+            height: 350px;
+            max-height: 400px;
+            /* Width constraints */
+            max-width: 100%; 
+        }
+
+        /* Specific constraints for different layout contexts */
+        .chart-container-lg {
+            height: 500px;
+            max-height: 600px;
+        }
+
+        .chart-container-sm {
+            height: 250px;
+            max-height: 300px;
+        }
+
+        /* Responsive adjustments */
+        @media (min-width: 1024px) {
+            .chart-container {
+                max-width: 100%; /* Let grid handle width, but ensure it fills cell */
+            }
+        }
+
+        .nav-link.active {
+            border-bottom: 2px solid #BC6C25;
+            color: #283618;
+            font-weight: 600;
+        }
+        
+        .scenario-btn.active {
+            background-color: #283618;
+            color: #FEFAE0;
+            border-color: #283618;
+        }
+    </style>
+</head>
+<body class="antialiased selection:bg-orange-200 selection:text-orange-900">
+
+    <!-- Navigation -->
+    <nav class="sticky top-0 z-50 bg-white/90 backdrop-blur-md shadow-sm border-b border-stone-200">
+        <div class="container mx-auto px-6 h-16 flex items-center justify-between">
+            <div class="flex items-center gap-3">
+                <div class="w-8 h-8 bg-text-dark text-white rounded flex items-center justify-center font-bold text-lg">S</div>
+                <div>
+                    <h1 class="font-bold text-text-dark text-lg tracking-tight">SENTINEL – MVP</h1>
+                    <p class="text-[10px] text-text-accent uppercase font-bold tracking-widest">KSA Risk Intelligence</p>
+                </div>
+            </div>
+            <div class="hidden md:flex gap-8 text-sm text-text-sub font-medium">
+                <a href="#overview" class="nav-link hover:text-text-dark transition-colors py-5 active">Overview</a>
+                <a href="#macro" class="nav-link hover:text-text-dark transition-colors py-5">Macro & PERI</a>
+                <a href="#operational" class="nav-link hover:text-text-dark transition-colors py-5">Operational</a>
+                <a href="#forecast" class="nav-link hover:text-text-dark transition-colors py-5">Forecast & Scenarios</a>
+            </div>
+            <div class="text-right hidden sm:block">
+                <div class="text-[10px] text-text-sub uppercase font-bold">Status</div>
+                <div class="text-sm font-bold text-status-warning flex items-center justify-end gap-1">
+                    <span class="w-2 h-2 rounded-full bg-status-warning animate-pulse"></span>
+                    ELEVATED
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <main class="container mx-auto px-4 py-8 max-w-7xl space-y-12">
+
+        <!-- SECTION 1: OVERVIEW & HEADLINES -->
+        <section id="overview" class="space-y-6">
+            <div class="text-center md:text-left">
+                <h2 class="text-3xl font-bold text-text-dark mb-2">Executive Risk Summary</h2>
+                <p class="text-text-sub max-w-3xl">
+                    Current sector outlook for KSA Construction. The market is experiencing <strong>Elevated</strong> risk levels driven primarily by liquidity tightening and supply chain friction within the giga-project ecosystem.
+                </p>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <!-- KPI Card 1 -->
+                <div class="bg-card rounded-xl p-6 shadow-sm border border-stone-100 flex flex-col justify-between hover:shadow-md transition-shadow">
+                    <div>
+                        <div class="text-xs font-bold text-text-sub uppercase tracking-wider mb-1">Sector Outlook</div>
+                        <div class="text-4xl font-bold text-status-warning">Elevated</div>
+                    </div>
+                    <div class="mt-4 text-sm text-text-main border-t border-stone-100 pt-3">
+                        Short-term forecast indicates rising cost pressure due to material inflation.
+                    </div>
+                </div>
+
+                <!-- KPI Card 2 -->
+                <div class="bg-card rounded-xl p-6 shadow-sm border border-stone-100 flex flex-col justify-between hover:shadow-md transition-shadow">
+                    <div>
+                        <div class="text-xs font-bold text-text-sub uppercase tracking-wider mb-1">PERI Score</div>
+                        <div class="text-4xl font-bold text-text-dark">58.4 <span class="text-lg text-text-sub font-normal">/ 100</span></div>
+                    </div>
+                    <div class="mt-4 text-sm text-text-main border-t border-stone-100 pt-3 flex justify-between items-center">
+                        <span>Political & Economic Risk Index</span>
+                        <span class="text-status-warning font-bold">↑ +2.1%</span>
+                    </div>
+                </div>
+
+                <!-- KPI Card 3 -->
+                <div class="bg-card rounded-xl p-6 shadow-sm border border-stone-100 flex flex-col justify-between hover:shadow-md transition-shadow">
+                    <div>
+                        <div class="text-xs font-bold text-text-sub uppercase tracking-wider mb-1">Primary Driver</div>
+                        <div class="text-2xl font-bold text-text-dark">Poly-Economic Stress</div>
+                    </div>
+                    <div class="mt-4 text-sm text-text-main border-t border-stone-100 pt-3">
+                        Interaction between global interest rates and local payment cycles.
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- SECTION 2: MACRO INTELLIGENCE (PERI) -->
+        <section id="macro" class="bg-card rounded-2xl shadow-sm border border-stone-100 overflow-hidden">
+            <div class="p-8 border-b border-stone-100">
+                <h3 class="text-2xl font-bold text-text-dark mb-2">Macro-Level Intelligence (PERI)</h3>
+                <p class="text-text-sub max-w-4xl">
+                    The <strong>Political & Economic Risk Index (PERI)</strong> is a composite metric designed to quantify the external pressure on the KSA construction environment. It weighs Economic factors (40%), Political stability (35%), and the Poly-Economic interplay (25%). Currently, <strong>Economic Risk (ERS)</strong> is the dominant stressor due to global inflation and financing costs.
+                </p>
+            </div>
+            
+            <div class="p-8 grid grid-cols-1 lg:grid-cols-3 gap-12">
+                <!-- Gauge Chart -->
+                <div class="flex flex-col items-center justify-center">
+                    <h4 class="text-sm font-bold text-text-sub uppercase mb-4">Aggregate Risk Score</h4>
+                    <div id="periGauge" class="chart-container chart-container-sm w-full"></div>
+                    <!-- Context Text -->
+                    <div class="text-center mt-4">
+                        <p class="text-sm font-medium text-text-dark">Status: <span class="text-status-warning">Monitoring Required</span></p>
+                        <p class="text-xs text-text-sub mt-1">Score calculated daily based on 18 sub-indicators.</p>
+                    </div>
+                </div>
+
+                <!-- Breakdown Donut Charts -->
+                <div class="col-span-1 lg:col-span-2">
+                    <h4 class="text-sm font-bold text-text-sub uppercase mb-6">Component Breakdown</h4>
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                        <!-- PRS -->
+                        <div class="text-center">
+                            <div class="chart-container" style="height: 180px;">
+                                <canvas id="prsChart"></canvas>
+                            </div>
+                            <p class="mt-3 text-sm font-bold text-text-dark">Political (PRS)</p>
+                            <p class="text-xs text-text-sub">Weight: 35%</p>
+                        </div>
+                        <!-- ERS -->
+                        <div class="text-center">
+                            <div class="chart-container" style="height: 180px;">
+                                <canvas id="ersChart"></canvas>
+                            </div>
+                            <p class="mt-3 text-sm font-bold text-text-dark">Economic (ERS)</p>
+                            <p class="text-xs text-text-sub">Weight: 40%</p>
+                        </div>
+                        <!-- PIS -->
+                        <div class="text-center">
+                            <div class="chart-container" style="height: 180px;">
+                                <canvas id="pisChart"></canvas>
+                            </div>
+                            <p class="mt-3 text-sm font-bold text-text-dark">Poly-Econ (PIS)</p>
+                            <p class="text-xs text-text-sub">Weight: 25%</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- SECTION 3: OPERATIONAL RISK LANDSCAPE -->
+        <!-- Visualization & Content Choices: 
+             1. Heatmap: To show the sheer volume of the 18 risk clusters and easily spot the "Red" zones.
+             2. Bar Chart: To strictly rank the top 10 for prioritization. -->
+        <section id="operational" class="space-y-6">
+            <div class="flex flex-col md:flex-row gap-6">
+                
+                <!-- Left Column: Risk Universe Heatmap -->
+                <div class="w-full md:w-2/3 bg-card rounded-2xl shadow-sm border border-stone-100 p-8">
+                    <div class="mb-6">
+                        <h3 class="text-xl font-bold text-text-dark">The Risk Universe (18 Clusters)</h3>
+                        <p class="text-sm text-text-sub mt-2">
+                            A holistic view of all monitored risk clusters mapped by intensity. Darker cells indicate higher aggregate risk scores (Likelihood × Impact). The <span class="text-status-critical font-bold">Financial</span> and <span class="text-status-critical font-bold">Supply Chain</span> clusters are currently flashing red.
+                        </p>
+                    </div>
+                    <div id="heatmapContainer" class="chart-container chart-container-lg"></div>
+                </div>
+
+                <!-- Right Column: Top 10 Ranking -->
+                <div class="w-full md:w-1/3 bg-card rounded-2xl shadow-sm border border-stone-100 p-8 flex flex-col">
+                    <div class="mb-6">
+                        <h3 class="text-xl font-bold text-text-dark">Top 10 Critical Risks</h3>
+                        <p class="text-sm text-text-sub mt-2">
+                            Prioritized ranking for immediate mitigation. Liquidity stress remains the #1 threat.
+                        </p>
+                    </div>
+                    <div class="chart-container flex-grow" style="height: 400px;">
+                        <canvas id="topRisksChart"></canvas>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Operational Radar -->
+            <div class="bg-card rounded-2xl shadow-sm border border-stone-100 p-8">
+                <div class="flex flex-col md:flex-row items-start md:items-center justify-between mb-8">
+                    <div class="max-w-2xl">
+                        <h3 class="text-xl font-bold text-text-dark">Sector Operational Health Indices</h3>
+                        <p class="text-sm text-text-sub mt-2">
+                            This radar plot compares 10 key operational performance vectors against a "Stable Market" baseline (dotted line). Areas where the shaded region extends beyond the baseline represent active friction points in the KSA sector, specifically <strong>Cash Flow</strong> and <strong>Cost Overrun</strong>.
+                        </p>
+                    </div>
+                </div>
+                <div class="chart-container" style="height: 450px; max-width: 800px;">
+                    <canvas id="radarChart"></canvas>
+                </div>
+            </div>
+        </section>
+
+        <!-- SECTION 4: INTERACTIVE FORECAST & SCENARIOS -->
+        <section id="forecast" class="bg-white rounded-2xl shadow-sm border border-stone-100 overflow-hidden">
+            <div class="p-8 border-b border-stone-100 bg-stone-50">
+                <h3 class="text-2xl font-bold text-text-dark mb-2">Forward-Looking Simulator</h3>
+                <p class="text-text-sub max-w-4xl">
+                    Interact with the model below to see how different geopolitical and economic scenarios impact the KSA Construction Risk Index over the next 90 days.
+                </p>
+            </div>
+            
+            <div class="p-8">
+                <!-- Scenario Controls -->
+                <div class="flex flex-wrap gap-4 mb-8 justify-center">
+                    <button onclick="updateScenario('base')" id="btn-base" class="scenario-btn active px-6 py-2 rounded-full border border-stone-300 text-sm font-bold transition-all hover:bg-stone-100">
+                        Base Case (Current)
+                    </button>
+                    <button onclick="updateScenario('oil')" id="btn-oil" class="scenario-btn px-6 py-2 rounded-full border border-stone-300 text-sm font-bold transition-all hover:bg-stone-100">
+                        Scenario A: Oil Price Drop (-15%)
+                    </button>
+                    <button onclick="updateScenario('region')" id="btn-region" class="scenario-btn px-6 py-2 rounded-full border border-stone-300 text-sm font-bold transition-all hover:bg-stone-100">
+                        Scenario B: Regional Escalation
+                    </button>
+                </div>
+
+                <!-- Line Chart -->
+                <div class="chart-container chart-container-lg">
+                    <canvas id="forecastChart"></canvas>
+                </div>
+
+                <!-- Narrative Box (Updates with JS) -->
+                <div id="scenarioText" class="mt-8 p-6 bg-bg rounded-lg border border-stone-200 text-sm text-text-main">
+                    <strong class="block mb-2 text-text-dark">Analysis: Base Case</strong>
+                    The baseline projection assumes status quo in regional logistics and oil prices holding above $75/bbl. Risk trends upwards slightly due to summer liquidity cycles but remains manageable within the "Elevated" band.
+                </div>
+            </div>
+        </section>
+
+        <!-- SECTION 5: AUTOMATED TRIGGER ACTIONS -->
+        <section id="actions" class="grid grid-cols-1 md:grid-cols-4 gap-6">
+            <div class="col-span-1 md:col-span-4 mb-2">
+                <h3 class="text-xl font-bold text-text-dark">Automated Trigger Recommendations</h3>
+                <p class="text-sm text-text-sub">Action protocols activated based on current PERI score (58.4).</p>
+            </div>
+
+            <!-- Card 1 -->
+            <div class="bg-card p-6 rounded-xl shadow-sm border-t-4 border-status-warning">
+                <div class="text-[10px] font-bold text-text-sub uppercase mb-2">Procurement</div>
+                <h4 class="font-bold text-text-dark mb-3">Early Mitigation</h4>
+                <ul class="text-sm text-text-sub space-y-2">
+                    <li class="flex items-start gap-2">
+                        <span class="text-status-safe">●</span> Lock material prices for 90 days.
+                    </li>
+                    <li class="flex items-start gap-2">
+                        <span class="text-status-safe">●</span> Diversify suppliers geographically.
+                    </li>
+                </ul>
+            </div>
+
+            <!-- Card 2 -->
+            <div class="bg-card p-6 rounded-xl shadow-sm border-t-4 border-status-critical">
+                <div class="text-[10px] font-bold text-text-sub uppercase mb-2">Financial</div>
+                <h4 class="font-bold text-text-dark mb-3">Escalation Phase</h4>
+                <ul class="text-sm text-text-sub space-y-2">
+                    <li class="flex items-start gap-2">
+                        <span class="text-status-critical">●</span> Increase contingency reserves by 5%.
+                    </li>
+                    <li class="flex items-start gap-2">
+                        <span class="text-status-critical">●</span> Weekly cash flow stress testing.
+                    </li>
+                </ul>
+            </div>
+
+            <!-- Card 3 -->
+            <div class="bg-card p-6 rounded-xl shadow-sm border-t-4 border-status-caution">
+                <div class="text-[10px] font-bold text-text-sub uppercase mb-2">Operations</div>
+                <h4 class="font-bold text-text-dark mb-3">Monitoring</h4>
+                <ul class="text-sm text-text-sub space-y-2">
+                    <li class="flex items-start gap-2">
+                        <span class="text-status-caution">●</span> Audit Nitaqat workforce compliance.
+                    </li>
+                    <li class="flex items-start gap-2">
+                        <span class="text-status-caution">●</span> Inspect critical equipment uptime.
+                    </li>
+                </ul>
+            </div>
+
+            <!-- Card 4 -->
+            <div class="bg-card p-6 rounded-xl shadow-sm border-t-4 border-stone-300 opacity-75">
+                <div class="text-[10px] font-bold text-text-sub uppercase mb-2">Strategic</div>
+                <h4 class="font-bold text-text-dark mb-3">Stable</h4>
+                <ul class="text-sm text-text-sub space-y-2">
+                    <li class="flex items-start gap-2">
+                        <span class="text-stone-400">●</span> No immediate strategic pivot required.
+                    </li>
+                    <li class="flex items-start gap-2">
+                        <span class="text-stone-400">●</span> Maintain current portfolio mix.
+                    </li>
+                </ul>
+            </div>
+        </section>
+
+        <footer class="text-center py-12 text-text-sub text-xs">
+            <p class="font-bold text-text-dark">SENTINEL – MVP | KSA Construction Risk Intelligence</p>
+            <p class="mt-2">Generated for KCG Environment • Confidential</p>
+        </footer>
+
+    </main>
+
+    <!-- JavaScript Logic -->
+    <script>
+        // --- 1. Data Store ---
+        const reportData = {
+            peri: 58.4,
+            breakdown: { prs: 52, ers: 75, pis: 68 },
+            topRisks: {
+                labels: ['Liquidity Stress', 'Material Inflation', 'Payment Delay', 'Labor Shortage', 'Geopolitics', 'Policy Changes', 'Logistics Lag', 'Disputes', 'Cyber', 'Quality'],
+                values: [88, 85, 82, 75, 70, 65, 62, 58, 45, 40]
+            },
+            radar: {
+                labels: ['Delays', 'Cost Overrun', 'Supplier Fail', 'Cash Flow', 'HSE', 'Workforce', 'Supply Chain', 'Quality', 'Contracts', 'Equipment'],
+                current: [65, 78, 55, 82, 35, 60, 72, 40, 50, 45],
+                baseline: [40, 40, 40, 40, 40, 40, 40, 40, 40, 40]
+            },
+            forecast: {
+                labels: ['Today', 'Day 15', 'Day 30', 'Day 45', 'Day 60', 'Day 75', 'Day 90'],
+                scenarios: {
+                    base: {
+                        data: [58.4, 60.2, 63.5, 62.1, 65.8, 68.2, 66.5],
+                        desc: "<strong class='block mb-2 text-text-dark'>Analysis: Base Case</strong>The baseline projection assumes status quo in regional logistics and oil prices holding above $75/bbl. Risk trends upwards slightly due to summer liquidity cycles but remains manageable within the 'Elevated' band."
+                    },
+                    oil: {
+                        data: [58.4, 65.0, 70.2, 75.5, 72.0, 70.0, 68.5],
+                        desc: "<strong class='block mb-2 text-text-dark'>Analysis: Oil Price Drop (-15%)</strong>A sharp drop in oil revenue triggers government budget consolidations. Payment cycles extend immediately, causing a spike in contractor liquidity stress around Day 30-45."
+                    },
+                    region: {
+                        data: [58.4, 62.0, 78.0, 85.0, 90.0, 92.0, 88.0],
+                        desc: "<strong class='block mb-2 text-text-dark'>Analysis: Regional Escalation</strong>Logistics routes via Red Sea compromised. Material costs skyrocket due to insurance premiums. Risk reaches 'Critical' levels by Day 60 due to inability to secure key inputs."
+                    }
+                }
+            }
+        };
+
+        // --- 2. Chart.js Config ---
+        Chart.defaults.font.family = "'Outfit', sans-serif";
+        Chart.defaults.color = '#787870';
+        
+        const commonOptions = {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: { display: false },
+                tooltip: {
+                    backgroundColor: '#283618',
+                    titleColor: '#FEFAE0',
+                    bodyColor: '#FEFAE0',
+                    padding: 10,
+                    cornerRadius: 4,
+                    displayColors: false,
+                    callbacks: {
+                        title: (items) => {
+                            // Wrap logic for tooltips
+                            const text = items[0].label;
+                            return text.length > 20 ? text.match(/.{1,20}(\s|$)/g) : text;
+                        }
+                    }
+                }
+            }
+        };
+
+        // --- 3. Initialization ---
+        document.addEventListener('DOMContentLoaded', () => {
+            initGauge();
+            initDonuts();
+            initHeatmap();
+            initTopRisks();
+            initRadar();
+            initForecast();
+        });
+
+        // --- 4. Gauge (Plotly) ---
+        function initGauge() {
+            const data = [{
+                type: "indicator",
+                mode: "gauge+number",
+                value: reportData.peri,
+                number: { font: { size: 48, color: "#4A4A40", family: "Outfit" }, suffix: "" },
+                gauge: {
+                    axis: { range: [0, 100], tickwidth: 1, tickcolor: "#787870" },
+                    bar: { color: "#283618" },
+                    bgcolor: "white",
+                    borderwidth: 0,
+                    steps: [
+                        { range: [0, 40], color: "#A3B18A" }, // Safe
+                        { range: [40, 60], color: "#E9C46A" }, // Caution
+                        { range: [60, 80], color: "#F4A261" }, // Warning
+                        { range: [80, 100], color: "#BC6C25" } // Critical
+                    ]
+                }
+            }];
+            const layout = {
+                margin: { t: 0, b: 0, l: 30, r: 30 },
+                paper_bgcolor: "rgba(0,0,0,0)",
+                font: { family: "Outfit" }
+            };
+            Plotly.newPlot('periGauge', data, layout, { responsive: true, displayModeBar: false });
+        }
+
+        // --- 5. Donuts (Chart.js) ---
+        function initDonuts() {
+            // PRS
+            new Chart(document.getElementById('prsChart'), {
+                type: 'doughnut',
+                data: {
+                    labels: ['Political Risk', 'Stability'],
+                    datasets: [{ data: [reportData.breakdown.prs, 100 - reportData.breakdown.prs], backgroundColor: ['#BC6C25', '#F9F8F6'] }]
+                },
+                options: { ...commonOptions, cutout: '70%' }
+            });
+            // ERS
+            new Chart(document.getElementById('ersChart'), {
+                type: 'doughnut',
+                data: {
+                    labels: ['Economic Risk', 'Stability'],
+                    datasets: [{ data: [reportData.breakdown.ers, 100 - reportData.breakdown.ers], backgroundColor: ['#283618', '#F9F8F6'] }]
+                },
+                options: { ...commonOptions, cutout: '70%' }
+            });
+            // PIS
+            new Chart(document.getElementById('pisChart'), {
+                type: 'doughnut',
+                data: {
+                    labels: ['Interaction Risk', 'Stability'],
+                    datasets: [{ data: [reportData.breakdown.pis, 100 - reportData.breakdown.pis], backgroundColor: ['#F4A261', '#F9F8F6'] }]
+                },
+                options: { ...commonOptions, cutout: '70%' }
+            });
+        }
+
+        // --- 6. Heatmap (Plotly) ---
+        function initHeatmap() {
+            // Simulated scores for 18 risk clusters
+            const xLabels = ['Strategic', 'Operational', 'Financial'];
+            const yLabels = ['Political', 'Market', 'Delivery', 'Technical', 'Contractual', 'Supply Chain'];
+            const zValues = [
+                [45, 62, 58], // Row 1
+                [40, 52, 65], // Row 2
+                [35, 78, 68], // Row 3
+                [42, 55, 72], // Row 4
+                [40, 70, 63], // Row 5
+                [41, 54, 68]  // Row 6
+            ];
+
+            const data = [{
+                z: zValues,
+                x: xLabels,
+                y: yLabels,
+                type: 'heatmap',
+                colorscale: [
+                    [0, '#F9F8F6'],   // Light
+                    [0.3, '#E9C46A'], // Med
+                    [0.6, '#F4A261'], // High
+                    [1.0, '#BC6C25']  // Crit
+                ],
+                showscale: true,
+                hovertemplate: 'Risk: %{y} - %{x}<br>Score: %{z}<extra></extra>'
+            }];
+
+            const layout = {
+                title: { text: "Risk Intensity Distribution", font: { size: 14, family: "Outfit", color: "#4A4A40" } },
+                margin: { t: 40, b: 40, l: 80, r: 20 },
+                xaxis: { side: 'top' },
+                paper_bgcolor: "rgba(0,0,0,0)",
+                font: { family: "Outfit", color: "#787870" }
+            };
+
+            Plotly.newPlot('heatmapContainer', data, layout, { responsive: true, displayModeBar: false });
+        }
+
+        // --- 7. Top Risks (Chart.js) ---
+        function initTopRisks() {
+            // Label wrapping logic for Chart.js
+            const wrappedLabels = reportData.topRisks.labels.map(l => l.length > 12 ? l.split(' ') : l);
+            
+            new Chart(document.getElementById('topRisksChart'), {
+                type: 'bar',
+                data: {
+                    labels: wrappedLabels,
+                    datasets: [{
+                        data: reportData.topRisks.values,
+                        backgroundColor: '#283618',
+                        borderRadius: 4
+                    }]
+                },
+                options: {
+                    ...commonOptions,
+                    indexAxis: 'y',
+                    scales: {
+                        x: { grid: { display: false } },
+                        y: { grid: { display: false } }
+                    }
+                }
+            });
+        }
+
+        // --- 8. Radar (Chart.js) ---
+        function initRadar() {
+            new Chart(document.getElementById('radarChart'), {
+                type: 'radar',
+                data: {
+                    labels: reportData.radar.labels,
+                    datasets: [
+                        {
+                            label: 'Current Risk',
+                            data: reportData.radar.current,
+                            backgroundColor: 'rgba(188, 108, 37, 0.2)',
+                            borderColor: '#BC6C25',
+                            pointBackgroundColor: '#BC6C25'
+                        },
+                        {
+                            label: 'Baseline',
+                            data: reportData.radar.baseline,
+                            borderColor: '#A3B18A',
+                            borderDash: [5, 5],
+                            pointRadius: 0
+                        }
+                    ]
+                },
+                options: {
+                    ...commonOptions,
+                    scales: {
+                        r: {
+                            suggestedMin: 0,
+                            suggestedMax: 100,
+                            ticks: { display: false },
+                            grid: { color: '#E5E5E0' },
+                            pointLabels: { font: { size: 11, family: 'Outfit' }, color: '#4A4A40' }
+                        }
+                    }
+                }
+            });
+        }
+
+        // --- 9. Forecast (Interactive Chart.js) ---
+        let forecastChartInstance;
+
+        function initForecast() {
+            const ctx = document.getElementById('forecastChart').getContext('2d');
+            forecastChartInstance = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: reportData.forecast.labels,
+                    datasets: [{
+                        label: 'Projected Risk Index',
+                        data: reportData.forecast.scenarios.base.data,
+                        borderColor: '#283618',
+                        backgroundColor: 'rgba(40, 54, 24, 0.05)',
+                        fill: true,
+                        tension: 0.4,
+                        borderWidth: 3,
+                        pointBackgroundColor: '#FEFAE0',
+                        pointBorderColor: '#283618',
+                        pointBorderWidth: 2,
+                        pointRadius: 5
+                    }]
+                },
+                options: {
+                    ...commonOptions,
+                    scales: {
+                        y: {
+                            min: 40,
+                            max: 100,
+                            grid: { color: '#F0F0F0' }
+                        },
+                        x: {
+                            grid: { display: false }
+                        }
+                    }
+                }
+            });
+
+            // Set initial description
+            document.getElementById('scenarioText').innerHTML = reportData.forecast.scenarios.base.desc;
+        }
+
+        // --- 10. Interactive Logic ---
+        function updateScenario(scenarioKey) {
+            // Update active button state
+            document.querySelectorAll('.scenario-btn').forEach(btn => btn.classList.remove('active', 'bg-text-dark', 'text-card', 'border-text-dark'));
+            const activeBtn = document.getElementById(`btn-${scenarioKey}`);
+            activeBtn.classList.add('active');
+
+            // Get scenario data
+            const scenario = reportData.forecast.scenarios[scenarioKey];
+
+            // Update chart data
+            forecastChartInstance.data.datasets[0].data = scenario.data;
+            forecastChartInstance.update();
+
+            // Update description text
+            const descBox = document.getElementById('scenarioText');
+            descBox.innerHTML = scenario.desc;
+            
+            // Add subtle highlight animation to text box
+            descBox.classList.add('bg-stone-50');
+            setTimeout(() => descBox.classList.remove('bg-stone-50'), 300);
+        }
+
+    </script>
+</body>
+</html>
