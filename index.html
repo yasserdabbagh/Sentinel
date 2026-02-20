@@ -1,0 +1,486 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sentinel – KCG's Daily Risk Intelligence Command Centre</title>
+    
+    <!-- Libraries -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.plot.ly/plotly-2.27.0.min.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+
+    <!-- Firebase SDKs -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+        import { getAuth, signInAnonymously, signInWithCustomToken, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+        import { getFirestore, doc, setDoc, getDoc, onSnapshot, collection } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+
+        // --- Firebase Configuration ---
+        const firebaseConfig = JSON.parse(__firebase_config);
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const db = getFirestore(app);
+        const appId = typeof __app_id !== 'undefined' ? __app_id : 'kcg-sentinel-v1';
+
+        // --- Application State & Logic ---
+        window.SENTINEL = {
+            db, auth, appId,
+            currentCycle: null,
+            baseScores: {
+                peri: 58.4,
+                prs: 52,
+                ers: 75,
+                pis: 68
+            },
+            // 18 Risk Clusters Baseline
+            clusters: [
+                "Political", "Economic", "Poly-Economic", "Strategic", "Market & Sector",
+                "Project Delivery", "Technical & Engineering", "Contractual & Claims",
+                "Financial", "Supply Chain & Procurement", "HSE", "Quality & Compliance",
+                "Environmental & Natural Hazard", "HR & Workforce", "Digital & Cybersecurity",
+                "Asset & Equipment", "Organizational & Leadership", "Reputation & Stakeholder"
+            ]
+        };
+
+        // --- Time Management (Saudi Arabia AST) ---
+        function getSaudiDateString() {
+            const now = new Date();
+            const saudiTime = new Intl.DateTimeFormat('en-GB', {
+                timeZone: 'Asia/Riyadh',
+                year: 'numeric', month: '2-digit', day: '2-digit'
+            }).format(now);
+            // Format: DD/MM/YYYY
+            return saudiTime;
+        }
+
+        function isPost8AM() {
+            const now = new Intl.DateTimeFormat('en-GB', {
+                timeZone: 'Asia/Riyadh',
+                hour: '2-digit', hour12: false
+            }).format(new Date());
+            return parseInt(now) >= 8;
+        }
+
+        // --- Data Generation (Deterministic Simulation) ---
+        // Generates deterministic data for a specific date so it "updates" daily at 8am
+        function generateDailyIntelligence(dateStr) {
+            // Seeded pseudo-randomness based on date string
+            const seed = dateStr.split('/').reduce((a, b) => a + parseInt(b), 0);
+            const variation = (seed % 10) - 5; // -5 to +5 range
+
+            const scores = {
+                peri: (58.4 + (variation * 0.5)).toFixed(2),
+                prs: (52 + (variation * 0.3)).toFixed(0),
+                ers: (75 + (variation * 0.8)).toFixed(0),
+                pis: (68 + (variation * 0.6)).toFixed(0),
+                date: dateStr,
+                timestamp: new Date().toISOString(),
+                indices: {
+                    delay: (65 + (variation * 1.2)).toFixed(0),
+                    cost: (78 + (variation * 1.5)).toFixed(0),
+                    supply: (72 + (variation * 2.0)).toFixed(0),
+                    cash: (82 + (variation * 1.8)).toFixed(0),
+                    hse: (35 + (variation * 0.5)).toFixed(0),
+                    quality: (45 + (variation * 0.2)).toFixed(0)
+                }
+            };
+            return scores;
+        }
+
+        // --- Firebase Integration ---
+        async function initSync() {
+            // Auth First (Rule 3)
+            try {
+                if (typeof __initial_auth_token !== 'undefined' && __initial_auth_token) {
+                    await signInWithCustomToken(auth, __initial_auth_token);
+                } else {
+                    await signInAnonymously(auth);
+                }
+            } catch (e) { console.error("Auth failed", e); }
+
+            onAuthStateChanged(auth, (user) => {
+                if (!user) return;
+                
+                const dateKey = getSaudiDateString().replace(/\//g, '-');
+                const docRef = doc(db, 'artifacts', appId, 'public', 'data', 'daily_intelligence', dateKey);
+
+                // Listen for daily update (Rule 1 & 2)
+                onSnapshot(docRef, (docSnap) => {
+                    if (docSnap.exists()) {
+                        updateUI(docSnap.data());
+                    } else {
+                        // If no cloud data yet for today, generate and suggest commit
+                        const freshData = generateDailyIntelligence(getSaudiDateString());
+                        updateUI(freshData);
+                        // Auto-save today's intelligence if user is first in
+                        setDoc(docRef, freshData).catch(e => console.log("Persistence read-only"));
+                    }
+                }, (err) => {
+                    // Fallback to local deterministic if firestore blocked
+                    updateUI(generateDailyIntelligence(getSaudiDateString()));
+                });
+            });
+        }
+
+        window.initSync = initSync;
+    </script>
+
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: { sans: ['Outfit', 'sans-serif'] },
+                    colors: {
+                        kcg: {
+                            navy: '#1a3668',
+                            red: '#d2232a',
+                            grey: '#f8fafc'
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        body { background-color: #ffffff; color: #1e293b; }
+        .chart-container { position: relative; width: 100%; height: 350px; }
+        .kcg-navy-bg { background-color: #1a3668; }
+        .kcg-red-text { color: #d2232a; }
+        .kcg-navy-text { color: #1a3668; }
+        .border-kcg { border-color: #1a3668; }
+        .risk-pill { padding: 2px 10px; border-radius: 999px; font-weight: 800; font-size: 10px; }
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-thumb { background: #1a3668; border-radius: 10px; }
+    </style>
+</head>
+<body class="antialiased font-sans">
+
+    <!-- NAVIGATION -->
+    <nav class="sticky top-0 z-50 bg-white border-b-4 border-kcg-navy shadow-md">
+        <div class="container mx-auto px-6 h-20 flex justify-between items-center">
+            <div class="flex flex-col">
+                <h1 class="font-black text-kcg-navy text-2xl tracking-tighter leading-none uppercase">
+                    KCG <span class="text-kcg-red">Sentinel</span> – MVP
+                </h1>
+                <p class="text-[9px] text-slate-400 font-bold uppercase tracking-[0.4em] mt-1">Daily Intelligence Command</p>
+            </div>
+            <div class="hidden lg:flex space-x-8 text-xs font-bold uppercase tracking-widest text-kcg-navy">
+                <a href="#summary" class="hover:text-kcg-red transition-colors">Summary</a>
+                <a href="#peri" class="hover:text-kcg-red transition-colors">PERI Index</a>
+                <a href="#clusters" class="hover:text-kcg-red transition-colors">Risk Universe</a>
+                <a href="#indices" class="hover:text-kcg-red transition-colors">Indices</a>
+            </div>
+            <div class="text-right border-l pl-6 border-slate-100">
+                <div id="saudi-clock" class="text-xs font-mono font-bold text-kcg-red">08:00:00 AST</div>
+                <div id="intel-date" class="text-[10px] text-kcg-navy font-black uppercase tracking-tighter">-- --- ----</div>
+            </div>
+        </div>
+    </nav>
+
+    <main class="container mx-auto px-6 py-10 max-w-7xl space-y-12">
+
+        <!-- 1. EXECUTIVE SUMMARY -->
+        <section id="summary" class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+            <div class="lg:col-span-2 bg-white p-10 rounded-2xl border border-slate-200 shadow-sm flex flex-col justify-between">
+                <div>
+                    <div class="flex items-center gap-2 mb-4">
+                        <span class="w-3 h-3 rounded-full bg-kcg-red animate-pulse"></span>
+                        <h2 class="text-3xl font-black text-kcg-navy tracking-tight">Intelligence Outlook</h2>
+                    </div>
+                    <p class="text-slate-600 leading-relaxed text-lg">
+                        As of <span class="saudi-date font-bold">Today</span>, the KSA construction sector risk remains <strong>Elevated</strong>. The 08:00 AST rollover indicates persistent pressure on <strong>Contractor Liquidity</strong> due to delayed certification cycles in the Giga-Project sector.
+                    </p>
+                </div>
+                <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mt-8">
+                    <div class="p-4 bg-slate-50 rounded-xl border border-slate-100">
+                        <p class="text-[9px] font-bold text-slate-400 uppercase">Outlook</p>
+                        <p class="font-bold text-kcg-red">ELEVATED</p>
+                    </div>
+                    <div class="p-4 bg-slate-50 rounded-xl border border-slate-100">
+                        <p class="text-[9px] font-bold text-slate-400 uppercase">PERI Index</p>
+                        <p id="ui-peri-val" class="font-bold text-kcg-navy">58.42</p>
+                    </div>
+                    <div class="p-4 bg-slate-50 rounded-xl border border-slate-100">
+                        <p class="text-[9px] font-bold text-slate-400 uppercase">Top Hazard</p>
+                        <p class="font-bold text-kcg-navy">Liquidity</p>
+                    </div>
+                    <div class="p-4 bg-slate-50 rounded-xl border border-slate-100">
+                        <p class="text-[9px] font-bold text-slate-400 uppercase">Intel Status</p>
+                        <p class="font-bold text-emerald-600">SYNCED</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="bg-kcg-navy text-white p-10 rounded-2xl shadow-xl border-b-8 border-kcg-red flex flex-col justify-between">
+                <div>
+                    <h3 class="text-kcg-red text-[10px] font-black uppercase tracking-widest mb-2">90-Day Forward Trend</h3>
+                    <div class="text-4xl font-black mb-6">TIGHTENING</div>
+                    <p class="text-sm text-slate-300 leading-relaxed">
+                        Macro-economic indicators suggest that SAIBOR volatility will drive a 5% increase in financing costs for mid-tier contractors by the next cycle.
+                    </p>
+                </div>
+                <div class="mt-8 pt-6 border-t border-white/10">
+                    <p class="text-[10px] font-bold text-white/40 uppercase mb-3">Daily Automated Action</p>
+                    <div class="text-xs font-bold bg-white/5 p-3 rounded-lg border border-white/10 italic">
+                        "Verify material hedging for Q3 procurement."
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 2. PERI – POLITICAL & ECONOMIC RISK INDEX -->
+        <section id="peri" class="bg-white p-10 rounded-2xl border border-slate-200 shadow-sm">
+            <div class="flex justify-between items-center mb-10">
+                <h3 class="text-xl font-bold text-kcg-navy">PERI Master Index Breakdown</h3>
+                <span class="text-[10px] font-bold text-slate-400 uppercase">Weights: PRS (35%) | ERS (40%) | PIS (25%)</span>
+            </div>
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-12">
+                <div class="flex flex-col items-center justify-center">
+                    <div id="ui-peri-gauge" class="w-full h-[280px]"></div>
+                    <p class="text-xs font-bold text-slate-400 uppercase mt-2">Aggregate Risk Score</p>
+                </div>
+                <div class="lg:col-span-2 grid grid-cols-1 md:grid-cols-3 gap-8">
+                    <div class="text-center">
+                        <div class="chart-container" style="height: 180px;"><canvas id="prs-chart"></canvas></div>
+                        <h4 class="text-sm font-bold mt-4 text-kcg-navy">Political (PRS)</h4>
+                        <p id="val-prs" class="text-[10px] text-kcg-red font-bold">52%</p>
+                    </div>
+                    <div class="text-center">
+                        <div class="chart-container" style="height: 180px;"><canvas id="ers-chart"></canvas></div>
+                        <h4 class="text-sm font-bold mt-4 text-kcg-navy">Economic (ERS)</h4>
+                        <p id="val-ers" class="text-[10px] text-kcg-red font-bold">75%</p>
+                    </div>
+                    <div class="text-center">
+                        <div class="chart-container" style="height: 180px;"><canvas id="pis-chart"></canvas></div>
+                        <h4 class="text-sm font-bold mt-4 text-kcg-navy">Poly-Econ (PIS)</h4>
+                        <p id="val-pis" class="text-[10px] text-kcg-red font-bold">68%</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 3. RISK UNIVERSE HEATMAP -->
+        <section id="clusters" class="bg-white p-10 rounded-2xl border border-slate-200 shadow-sm">
+            <div class="mb-8">
+                <h3 class="text-2xl font-black text-kcg-navy">Full KSA Construction Risk Universe</h3>
+                <p class="text-sm text-slate-500">Analysis of the 18 Mandatory clusters based on Likelihood vs Financial Impact.</p>
+            </div>
+            <div class="flex flex-col lg:flex-row gap-12">
+                <div class="lg:w-2/3">
+                    <div id="ui-heatmap" class="w-full h-[450px]"></div>
+                </div>
+                <div class="lg:w-1/3">
+                    <h4 class="text-xs font-black uppercase text-kcg-navy mb-6 pb-2 border-b-2 border-kcg-red">Top 10 Critical Priorities</h4>
+                    <div class="chart-container" style="height: 380px;"><canvas id="top-bar"></canvas></div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 4. OPERATIONAL INDICES -->
+        <section id="indices" class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+            <div class="bg-white p-10 rounded-2xl border border-slate-200 shadow-sm">
+                <h3 class="text-xl font-bold text-kcg-navy mb-8 text-center uppercase tracking-widest">Sector Operational Health</h3>
+                <div class="chart-container"><canvas id="radar-indices"></canvas></div>
+            </div>
+            <div class="bg-slate-50 p-10 rounded-2xl border border-slate-200 space-y-6">
+                <h3 class="text-xl font-bold text-kcg-navy mb-4">Daily Incident Indices</h3>
+                <div id="ui-index-grid" class="grid grid-cols-2 gap-4">
+                    <!-- Dynamic Grid Content -->
+                </div>
+                <div class="p-6 bg-white rounded-xl border border-kcg-navy shadow-inner mt-6">
+                    <h4 class="text-xs font-black uppercase text-kcg-red mb-2">Automated Forecast (90-Day)</h4>
+                    <div class="chart-container" style="height: 150px;"><canvas id="line-forecast"></canvas></div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 5. 18-CLUSTER DETAILS (SCROLLABLE LIST) -->
+        <section class="bg-kcg-navy text-white p-10 rounded-3xl shadow-2xl">
+            <h3 class="text-2xl font-black mb-8">Daily Deep-Dive: 18 Cluster Intelligence</h3>
+            <div id="ui-cluster-list" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 max-h-[600px] overflow-y-auto pr-4">
+                <!-- Populated via JS -->
+            </div>
+        </section>
+
+    </main>
+
+    <footer class="bg-kcg-navy text-white py-16 mt-20 border-t-8 border-kcg-red">
+        <div class="container mx-auto px-6 text-center">
+            <h2 class="text-white font-black text-2xl mb-2 tracking-tighter">KCG SENTINEL AI</h2>
+            <p class="text-[10px] font-bold uppercase tracking-[0.4em] mb-10 opacity-60">Project Sentinel – Autonomous Intelligence Layer</p>
+            <div class="max-w-md mx-auto text-[8px] leading-relaxed opacity-40 space-y-4">
+                <p>This intelligence report is generated daily at 08:00 AST using deterministic macro-modeling. It reflects sector-level assumptions for the Kingdom of Saudi Arabia construction market.</p>
+                <p>© 2023 KCG Environmental Services. All Rights Reserved. Confidential Data.</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- UI UPDATE LOGIC -->
+    <script>
+        // --- Helper: Format Clusters ---
+        function renderClusters(data) {
+            const list = document.getElementById('ui-cluster-list');
+            list.innerHTML = '';
+            
+            const clusterNames = [
+                "Political", "Economic", "Poly-Economic", "Strategic", "Market", 
+                "Project Delivery", "Technical", "Contractual", "Financial", "Supply Chain",
+                "HSE", "Quality", "Environmental", "HR & Workforce", "Digital/Cyber",
+                "Asset/Equip", "Organizational", "Reputation"
+            ];
+
+            clusterNames.forEach(name => {
+                const card = document.createElement('div');
+                card.className = 'bg-white/10 p-5 rounded-xl border border-white/10 hover:border-kcg-red transition-all group';
+                card.innerHTML = `
+                    <div class="flex justify-between items-start mb-2">
+                        <h4 class="font-bold text-sm text-kcg-red">${name}</h4>
+                        <span class="risk-pill bg-white/20 text-[8px]">HIGH</span>
+                    </div>
+                    <p class="text-[10px] text-slate-400 mb-4">Urgency: Monitoring for immediate volatility triggers.</p>
+                    <div class="flex justify-between text-[9px] text-slate-300">
+                        <span>Likelihood: 65%</span>
+                        <span>Impact: 80%</span>
+                    </div>
+                `;
+                list.appendChild(card);
+            });
+        }
+
+        // --- Helper: Render Radar ---
+        let radarChart, lineChart, prsDonut, ersDonut, pisDonut, barChart;
+
+        function updateUI(data) {
+            // Update Text
+            document.getElementById('ui-peri-val').innerText = data.peri;
+            document.getElementById('val-prs').innerText = data.prs + "%";
+            document.getElementById('val-ers').innerText = data.ers + "%";
+            document.getElementById('val-pis').innerText = data.pis + "%";
+            document.getElementById('intel-date').innerText = "ROLLOVER: " + data.date;
+            
+            const saudiDateNodes = document.querySelectorAll('.saudi-date');
+            saudiDateNodes.forEach(n => n.innerText = data.date);
+
+            // Update Index Grid
+            const grid = document.getElementById('ui-index-grid');
+            grid.innerHTML = '';
+            Object.entries(data.indices).forEach(([key, val]) => {
+                const div = document.createElement('div');
+                div.className = 'bg-white p-3 rounded-lg border border-slate-100 flex justify-between items-center';
+                div.innerHTML = `<span class="text-[10px] font-bold text-slate-500 uppercase">${key}</span><span class="font-bold text-kcg-navy">${val}</span>`;
+                grid.appendChild(div);
+            });
+
+            // Re-render Charts
+            renderGauge(data.peri);
+            renderDonuts(data);
+            renderHeatmap();
+            renderRadar(data.indices);
+            renderLine(data);
+            renderBar();
+            renderClusters();
+        }
+
+        function renderGauge(val) {
+            const data = [{
+                type: "indicator", mode: "gauge+number", value: parseFloat(val),
+                number: { font: { size: 48, color: "#1a3668", family: "Outfit" } },
+                gauge: {
+                    axis: { range: [0, 100], tickwidth: 1, tickcolor: "#1a3668" },
+                    bar: { color: "#d2232a" },
+                    bgcolor: "white",
+                    steps: [{ range: [0, 40], color: "#e2e8f0" }, { range: [40, 60], color: "#cbd5e1" }]
+                }
+            }];
+            Plotly.newPlot('ui-peri-gauge', data, { margin: { t: 0, b: 0, l: 30, r: 30 }, paper_bgcolor: 'transparent' }, { responsive: true, displayModeBar: false });
+        }
+
+        function renderDonuts(data) {
+            const common = { cutout: '85%', plugins: { legend: { display: false } }, maintainAspectRatio: false };
+            
+            if (prsDonut) prsDonut.destroy();
+            prsDonut = new Chart(document.getElementById('prs-chart'), { type: 'doughnut', data: { labels: ['Risk', 'Stability'], datasets: [{ data: [data.prs, 100 - data.prs], backgroundColor: ['#1a3668', '#f1f5f9'] }] }, options: common });
+            
+            if (ersDonut) ersDonut.destroy();
+            ersDonut = new Chart(document.getElementById('ers-chart'), { type: 'doughnut', data: { labels: ['Risk', 'Stability'], datasets: [{ data: [data.ers, 100 - data.ers], backgroundColor: ['#d2232a', '#f1f5f9'] }] }, options: common });
+
+            if (pisDonut) pisDonut.destroy();
+            pisDonut = new Chart(document.getElementById('pis-chart'), { type: 'doughnut', data: { labels: ['Risk', 'Stability'], datasets: [{ data: [data.pis, 100 - data.pis], backgroundColor: ['#1a3668', '#f1f5f9'] }] }, options: common });
+        }
+
+        function renderHeatmap() {
+            const data = [{
+                z: [[45, 62, 85, 40, 52, 65], [42, 65, 88, 35, 50, 58], [40, 60, 82, 38, 54, 60]],
+                x: ['Strategic', 'Economic', 'Financial', 'Technical', 'Quality', 'Delivery'],
+                y: ['Macro', 'Operation', 'Support'],
+                type: 'heatmap', colorscale: [[0, '#f1f5f9'], [0.5, '#1a3668'], [1, '#d2232a']], showscale: false
+            }];
+            Plotly.newPlot('ui-heatmap', data, { margin: { t: 0, b: 40, l: 80, r: 20 }, paper_bgcolor: 'transparent' }, { responsive: true, displayModeBar: false });
+        }
+
+        function renderRadar(indices) {
+            if (radarChart) radarChart.destroy();
+            radarChart = new Chart(document.getElementById('radar-indices'), {
+                type: 'radar',
+                data: {
+                    labels: ['Delay', 'Cost', 'Supply', 'Cash', 'HSE', 'Quality'],
+                    datasets: [{
+                        label: 'Status', data: Object.values(indices),
+                        borderColor: '#d2232a', backgroundColor: 'rgba(210, 35, 42, 0.1)', pointBackgroundColor: '#1a3668'
+                    }]
+                },
+                options: { maintainAspectRatio: false, scales: { r: { ticks: { display: false }, grid: { color: '#f1f5f9' }, angleLines: { color: '#f1f5f9' } } }, plugins: { legend: { display: false } } }
+            });
+        }
+
+        function renderBar() {
+            if (barChart) barChart.destroy();
+            barChart = new Chart(document.getElementById('top-bar'), {
+                type: 'bar',
+                data: {
+                    labels: ['Liquidity', 'Materials', 'Labor', 'Interest', 'Lead Time', 'Cyber', 'Contracts', 'Quality', 'Oil Price', 'Policy'],
+                    datasets: [{ data: [88, 85, 78, 75, 72, 68, 65, 60, 55, 52], backgroundColor: '#1a3668' }]
+                },
+                options: { indexAxis: 'y', maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { x: { display: false }, y: { grid: { display: false } } } }
+            });
+        }
+
+        function renderLine(data) {
+            if (lineChart) lineChart.destroy();
+            lineChart = new Chart(document.getElementById('line-forecast'), {
+                type: 'line',
+                data: {
+                    labels: ['D0', 'D15', 'D30', 'D45', 'D60', 'D75', 'D90'],
+                    datasets: [{
+                        label: 'Projection',
+                        data: [data.peri, 60, 65, 63, 68, 70, 66],
+                        borderColor: '#1a3668', tension: 0.4, fill: false, borderWidth: 3
+                    }]
+                },
+                options: { maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { y: { display: false }, x: { grid: { display: false } } } }
+            });
+        }
+
+        // --- Clock Update ---
+        function updateClock() {
+            const clock = document.getElementById('saudi-clock');
+            const now = new Date();
+            const saudiTime = new Intl.DateTimeFormat('en-GB', {
+                timeZone: 'Asia/Riyadh',
+                hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: false
+            }).format(now);
+            clock.textContent = saudiTime + " AST";
+        }
+
+        // --- Init ---
+        window.onload = () => {
+            updateClock();
+            setInterval(updateClock, 1000);
+            window.initSync();
+        };
+    </script>
+</body>
+</html>
