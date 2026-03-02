@@ -27,15 +27,15 @@
     <header class="bg-white text-slate-900 sticky top-0 z-50 border-b border-slate-200 shadow-sm">       
         <div class="max-w-7xl mx-auto px-4 h-20 flex justify-between items-center">
             <div class="flex items-center space-x-4">
-                <img src="uploaded:KCG Logo.JPG-1ZS6Df2DbiQ6fIf0hHJs_alU-2FhdogSF" alt="SENTINEL" class="h-14 w-auto">                
+                <img src="https://raw.githubusercontent.com/yasserdabbagh/Sentinel/c15bd6af996edbf34dd39585f8e7f00f884146a3/SENTINEL.jpg" alt="SENTINEL" class="h-14 w-auto">                
                 <div class="border-l border-slate-300 pl-4">
                     <h1 class="text-xl font-extrabold tracking-tighter text-slate-900 uppercase">SENTINEL</h1>    
                     <p class="text-[10px] uppercase tracking-widest text-slate-500 font-bold">KSA Risk Intelligence Command Centre</p>
                 </div>
             </div>
             <div class="text-right">
-                <div id="live-clock" class="text-sm font-mono text-slate-900 font-bold tracking-tighter uppercase">MAR 01, 2026 | 08:00 AM</div>
-                <div class="text-[10px] text-slate-400 font-bold uppercase tracking-widest">Sector Outlook: <span id="headerStatus" class="status-pulse">---</span></div>
+                <div id="live-clock" class="text-sm font-mono text-slate-900 font-bold tracking-tighter uppercase">MAR 02, 2026 | 08:00 AM</div>
+                <div class="text-[10px] text-slate-400 font-bold uppercase tracking-widest">Sector Outlook: <span id="headerStatus" class="status-pulse font-black">---</span></div>
             </div>
         </div>
     </header>
@@ -56,35 +56,35 @@
                     </div>
                 </div>
                 <div class="w-full grid grid-cols-3 gap-2 mt-4 text-center border-t border-slate-100 pt-4">
-                    <div><span class="block text-[10px] text-slate-400 uppercase font-bold">PRS</span><span class="font-bold text-slate-800" id="prsDisplay">41</span></div>
-                    <div><span class="block text-[10px] text-slate-400 uppercase font-bold">ERS</span><span class="font-bold text-slate-800" id="ersDisplay">75</span></div>
-                    <div><span class="block text-[10px] text-slate-400 uppercase font-bold">PIS</span><span class="font-bold text-slate-800" id="pisDisplay">72</span></div>
+                    <div><span class="block text-[10px] text-slate-400 uppercase font-bold">PRS</span><span class="font-bold text-slate-800" id="prsScore">42</span></div>
+                    <div><span class="block text-[10px] text-slate-400 uppercase font-bold">ERS</span><span class="font-bold text-slate-800" id="ersScore">76</span></div>
+                    <div><span class="block text-[10px] text-slate-400 uppercase font-bold">PIS</span><span class="font-bold text-slate-800" id="pisScore">73</span></div>
                 </div>
             </div>
 
-            <!-- KEY MACRO DRIVERS -->
+            <!-- MACRO DRIVERS -->
             <div class="bg-white p-6 rounded-xl shadow-sm border border-slate-200">
                 <h3 class="text-xs font-black text-slate-400 uppercase tracking-widest mb-4">Key Macro Drivers</h3>
                 <div class="space-y-4">
                     <div class="flex items-start space-x-3 p-3 bg-slate-50 rounded-lg border border-slate-100">
-                        <i class="fas fa-truck-fast text-blue-500 mt-1"></i>
+                        <i class="fas fa-ship text-red-500 mt-1"></i>
                         <div>
-                            <h4 class="text-sm font-bold text-slate-900">Pre-Ramadan Logistics Surge</h4>
-                            <p class="text-xs text-slate-600 leading-relaxed">Importers are accelerating technical specialized MEP deliveries to Jeddah/Dammam ports before the March 11 shift transition.</p>
+                            <h4 class="text-sm font-bold text-slate-900">Maritime Risk Escalation</h4>
+                            <p class="text-xs text-slate-600 leading-relaxed">Red Sea maritime insurance premiums reached a 14-month peak this morning. Air-freight diversion costs are increasing technical MEP budgets by 18%.</p>
                         </div>
                     </div>
                     <div class="flex items-start space-x-3 p-3 bg-slate-50 rounded-lg border border-slate-100">
-                        <i class="fas fa-money-check-dollar text-amber-500 mt-1"></i>
+                        <i class="fas fa-credit-card text-amber-500 mt-1"></i>
                         <div>
-                            <h4 class="text-sm font-bold text-slate-900">Technical Credit Compression</h4>
-                            <p class="text-xs text-slate-600 leading-relaxed">Tier 2 subcontractors report SAR credit limits hitting red-zones. High Repo rates interacting with DSO peaks of 155 days.</p>
+                            <h4 class="text-sm font-bold text-slate-900">Credit Cycle Alert</h4>
+                            <p class="text-xs text-slate-600 leading-relaxed">Tier 2 electrical and civil subcontractors report record exhaustion of SME facilities. Average sector DSO is stabilizing at a stretched 155 days.</p>
                         </div>
                     </div>
                     <div class="flex items-start space-x-3 p-3 bg-slate-50 rounded-lg border border-slate-100">
-                        <i class="fas fa-person-circle-exclamation text-green-500 mt-1"></i>
+                        <i class="fas fa-people-group text-green-500 mt-1"></i>
                         <div>
-                            <h4 class="text-sm font-bold text-slate-900">Certified Leadership Poaching</h4>
-                            <p class="text-xs text-slate-600 leading-relaxed">Riyadh Expo cluster mobilization has triggered a 15% salary spike for local certified PMs and HSE managers.</p>
+                            <h4 class="text-sm font-bold text-slate-900">Technical Human Capital</h4>
+                            <p class="text-xs text-slate-600 leading-relaxed">Riyadh housing clusters seeing 30% senior staff turnover as technical leadership migrates to high-margin Expo 2030 hubs.</p>
                         </div>
                     </div>
                 </div>
@@ -102,13 +102,14 @@
         <!-- SECTION 2: THE KSA RISK UNIVERSE (MATRIX) -->
         <section id="risk-explorer">
             <div class="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
+                <!-- Unified Executive Header Style -->
                 <div class="bg-white p-6 flex flex-col md:flex-row justify-between items-start md:items-center border-b border-slate-200">
                     <div>
                         <h2 class="text-lg font-extrabold text-slate-900 uppercase tracking-tight">KSA Risk Universe Matrix</h2>
-                        <p class="text-xs text-slate-500 font-medium tracking-tight">Interactive Map of 18 Risk Clusters.</p>
+                        <p class="text-xs text-slate-500 font-medium tracking-tight">Intelligence Map for 18 Technical Risk Clusters.</p>
                     </div>
                     <div class="mt-4 md:mt-0 flex items-center space-x-2">
-                        <span class="text-[10px] text-slate-400 uppercase font-bold mr-2">Filter View:</span>
+                        <span class="text-[10px] text-slate-400 uppercase font-bold mr-2">Filter Matrix:</span>
                         <button onclick="filterMatrix('all')" class="px-3 py-1 bg-slate-100 text-slate-700 border border-slate-200 text-[10px] font-bold rounded hover:bg-slate-200 transition">ALL</button>
                         <button onclick="filterMatrix('Macro')" class="px-3 py-1 bg-blue-50 text-blue-700 border border-blue-100 text-[10px] font-bold rounded hover:bg-blue-100 transition">MACRO</button>
                         <button onclick="filterMatrix('Operational')" class="px-3 py-1 bg-amber-50 text-amber-700 border border-amber-100 text-[10px] font-bold rounded hover:bg-amber-100 transition">OPERATIONAL</button>
@@ -122,16 +123,16 @@
                             <canvas id="riskMatrix"></canvas>
                         </div>
                         <div class="mt-4 flex justify-center space-x-6 text-[10px] text-slate-400 font-black uppercase tracking-widest">
-                            <span class="flex items-center"><span class="w-3 h-3 bg-red-500 rounded-full mr-2"></span> Severity</span>
-                            <span class="flex items-center ml-4">X: Likelihood | Y: Impact</span>
+                            <span class="flex items-center"><span class="w-3 h-3 bg-red-500 rounded-full mr-2"></span> Severity Rating</span>
+                            <span class="flex items-center ml-4">X-Axis: Likelihood | Y-Axis: Impact</span>
                         </div>
                     </div>
 
                     <!-- CLUSTER DETAIL PANEL -->
                     <div class="lg:col-span-4 bg-slate-50/50 p-6 h-[600px] overflow-y-auto custom-scroll" id="clusterDetail">
                         <div class="flex flex-col items-center justify-center h-full text-center text-slate-400 space-y-4 opacity-50">
-                            <i class="fas fa-crosshairs text-4xl"></i>
-                            <p class="text-sm font-bold uppercase tracking-tight">Select a risk bubble from the matrix<br>to view sentinel briefing</p>
+                            <i class="fas fa-radar text-4xl"></i>
+                            <p class="text-sm font-bold uppercase tracking-tight">Select a risk bubble<br>to decrypt sentinel briefing</p>
                         </div>
                     </div>
                 </div>
@@ -150,7 +151,7 @@
 
             <div class="bg-slate-900 text-white p-6 rounded-xl shadow-sm border border-slate-800">
                 <div class="flex justify-between items-center mb-6">
-                    <h3 class="text-xs font-black text-amber-500 uppercase tracking-widest">Forward Intelligence Center</h3>
+                    <h3 class="text-xs font-black text-amber-500 uppercase tracking-widest">Sentinel Command Simulator</h3>
                     <div class="flex space-x-2">
                         <button onclick="updateScenario('baseline')" class="px-3 py-1 bg-slate-800 rounded text-[10px] font-bold hover:bg-slate-700 active-tab" id="btn-baseline">BASELINE</button>
                         <button onclick="updateScenario('oil_shack')" class="px-3 py-1 bg-slate-800 rounded text-[10px] font-bold hover:bg-slate-700" id="btn-oil">OIL DROP</button>
@@ -160,8 +161,8 @@
 
                 <div class="space-y-6">
                     <div class="p-4 bg-slate-800/50 rounded-lg border border-slate-700">
-                        <h4 class="text-[10px] uppercase text-amber-500 font-bold mb-2 tracking-widest">Protocol Band: <span id="triggerLevel">---</span></h4>
-                        <p id="protocolText" class="text-sm text-slate-200 leading-relaxed italic">Analyzing protocols...</p>
+                        <h4 class="text-[10px] uppercase text-amber-500 font-bold mb-2 tracking-widest">Status Protocol: <span id="triggerLevel">---</span></h4>
+                        <p id="protocolText" class="text-sm text-slate-200 leading-relaxed italic">Directing command protocols...</p>
                     </div>
                     
                     <div class="grid grid-cols-2 gap-4">
@@ -176,7 +177,7 @@
                     </div>
 
                     <div class="mt-4 pt-4 border-t border-slate-800">
-                        <h4 class="text-[10px] uppercase text-amber-500 font-black mb-3">Directives</h4>
+                        <h4 class="text-[10px] uppercase text-amber-500 font-black mb-3">Protocol Directives</h4>
                         <div id="triggerActionsList" class="space-y-2">
                             <!-- Populated by JS -->
                         </div>
@@ -185,10 +186,10 @@
             </div>
         </section>
 
-        <!-- TOP 10 HEAT MAP -->
+        <!-- TOP 10 HEAT MAP SUMMARY -->
         <section class="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
             <div class="bg-slate-50 p-4 border-b border-slate-200">
-                <h3 class="text-xs font-black text-slate-600 uppercase tracking-widest">Top 10 Risk Rankings Heat Map</h3>
+                <h3 class="text-xs font-black text-slate-600 uppercase tracking-widest">Ranked Risk Heat Map (Top 10)</h3>
             </div>
             <div class="overflow-x-auto">
                 <table class="w-full text-left text-xs">
@@ -198,7 +199,7 @@
                             <th class="px-6 py-4">Category</th>
                             <th class="px-6 py-4 text-center">Likelihood</th>
                             <th class="px-6 py-4 text-center">Impact</th>
-                            <th class="px-6 py-4 text-center">Severity</th>
+                            <th class="px-6 py-4 text-center">Rating</th>
                             <th class="px-6 py-4">Status</th>
                         </tr>
                     </thead>
@@ -212,60 +213,60 @@
     </main>
 
     <footer class="max-w-7xl mx-auto px-4 py-8 border-t border-slate-200 text-center">
-        <p class="text-[10px] text-slate-400 uppercase font-black tracking-widest">Confidential MVP Release | Sentinel AI Platform | March 01 2026</p>
+        <p class="text-[10px] text-slate-400 uppercase font-black tracking-widest italic tracking-tighter">Confidential Sector Intelligence | Sentinel Risk AI Command | MAR 02 2026 Snapshot</p>
     </footer>
 
     <script>
         // --- DATA REPOSITORY ---
         const risks = [
-            { id: 1, cluster: "Political Risk", cat: "Macro", score: 41, likelihood: 35, impact: 85, urgency: "Medium", drivers: "Regional geopolitics, shipping lane tension.", warning: "Maritime alert status elevated.", impact_desc: "Budget redirection for strategic core packages.", mitigation: "Government stakeholder engagement; route diversification." },
-            { id: 2, cluster: "Economic Risk", cat: "Macro", score: 75, likelihood: 80, impact: 75, urgency: "High", drivers: "Inflation, Repo rates, shipping insurance spikes.", warning: "MEP material CPI hitting cycle highs.", impact_desc: "Direct margin erosion on EPC contracts.", mitigation: "Hedge material procurement; bridge finance locks." },
-            { id: 3, cluster: "Poly-Economic", cat: "Macro", score: 72, likelihood: 65, impact: 85, urgency: "High", drivers: "Logistics delay + Subcontractor cash friction.", warning: "Average DSO in technical packages at 155 days.", impact_desc: "Failure of Tier 2/3 specialized subs.", mitigation: "Integrated stress-testing of cash cycles." },
-            { id: 4, cluster: "Strategic Risk", cat: "Strategic", score: 50, likelihood: 45, impact: 75, urgency: "Medium", drivers: "Concentration in Riyadh Expo 2030 clusters.", warning: "Over-exposure to single developer pools.", impact_desc: "Systemic portfolio vulnerability.", mitigation: "Diversify client base to ministry and private pools." },
-            { id: 5, cluster: "Market Risk", cat: "Strategic", score: 76, likelihood: 88, impact: 70, urgency: "High", drivers: "Technical resource poach-war.", warning: "Bid margins hitting 4% sector baselines.", impact_desc: "Systemic SME insolvency risk.", mitigation: "Specialization in technical modular BIM tech." },
-            { id: 6, cluster: "Project Delivery", cat: "Operational", score: 90, likelihood: 95, impact: 90, urgency: "High", drivers: "Timeline compression, Pre-Ramadan surge.", warning: "Milestone slippage reported in 30% of portfolio.", impact_desc: "Accumulated LDs and brand damage with PIF.", mitigation: "AI-driven schedule early warning deployment." },
-            { id: 7, cluster: "Technical Risk", cat: "Technical", score: 55, likelihood: 45, impact: 85, urgency: "Low", drivers: "SBC compliance, engineering complexity.", warning: "Technical RFI spike in civil hubs.", impact_desc: "Approval cycle slowdowns.", mitigation: "Integrated 6D BIM technical coordination." },
-            { id: 8, cluster: "Contractual/Claims", cat: "Financial", score: 86, likelihood: 85, impact: 95, urgency: "High", drivers: "LD escalation, FM validity friction.", warning: "Notice of Claims volume up 32% MoM.", impact_desc: "Cash flow lockdown due to legal friction.", mitigation: "Digital record management; claim avoidance desk." },
-            { id: 9, cluster: "Financial Risk", cat: "Financial", score: 89, likelihood: 92, impact: 90, urgency: "Critical", drivers: "Credit squeeze, DSO stretch.", warning: "Tier 2 credit exhaustion hits alert levels.", impact_desc: "Mobilization failure for giga-technical packages.", mitigation: "Receivables management; supply chain finance." },
-            { id: 10, cluster: "Supply Chain", cat: "Operational", score: 95, likelihood: 98, impact: 95, urgency: "Critical", drivers: "Red Sea logistics, insurance premiums.", warning: "Freight rates up 240% for Suez routes.", impact_desc: "Critical path stoppage due to MEP lack.", mitigation: "120-day technical material buffer; local fab." },
-            { id: 11, cluster: "HSE Risk", cat: "Operational", score: 48, likelihood: 30, impact: 95, urgency: "Low", drivers: "Site overcrowding, Ramadan shift transition.", warning: "Fatigue alerts rising for night-shift teams.", impact_desc: "Work stoppage, legal liability, fatal incidents.", mitigation: "Wearable fatigue monitoring platform." },
-            { id: 12, cluster: "Quality/Compliance", cat: "Operational", score: 65, likelihood: 65, impact: 70, urgency: "Medium", drivers: "SBC enforcement, technical deviations.", warning: "Snagging volume pre-handover spike.", impact_desc: "Handover delays and rework overheads.", mitigation: "Digital QA/QC audit checklists." },
-            { id: 13, cluster: "Environmental", cat: "Macro", score: 40, likelihood: 30, impact: 75, urgency: "Low", drivers: "Dust storm cycles, seasonal shift.", warning: "Dust alerts increasing in Central Province.", impact_desc: "Production rate drops.", mitigation: "Site hardening; protective asset cycles." },
-            { id: 14, cluster: "HR & Workforce", cat: "Operational", score: 97, likelihood: 99, impact: 95, urgency: "Critical", drivers: "Staff poach-war, Saudization caps.", warning: "Technical turnover hitting 30% in Riyadh.", impact_desc: "Loss of project memory and delivery speed.", mitigation: "Retention loyalty grants; internal PM Academy." },
-            { id: 15, cluster: "Digital/Cyber", cat: "Technical", score: 72, likelihood: 55, impact: 85, urgency: "Medium", drivers: "OT ransomware targeting sites.", warning: "Social engineering spike on finance desks.", impact_desc: "Operational blackout and technical data theft.", mitigation: "Zero-trust network architecture deployment." },
-            { id: 16, cluster: "Asset/Equipment", cat: "Operational", score: 60, likelihood: 50, impact: 75, urgency: "Low", drivers: "Aging fleet, specialized parts lag.", warning: "Heavy plant downtime up 18% MoM.", impact_desc: "Rate drops in earthworks lifting.", mitigation: "Predictive maintenance local caches." },
-            { id: 17, cluster: "Organizational", cat: "Strategic", score: 55, likelihood: 40, impact: 75, urgency: "Medium", drivers: "Decision silos, scaling velocity.", warning: "Bid turnaround hit 21-day average.", impact_desc: "Inability to pivot to Vision priorities.", mitigation: "Agile task-force restructuring." },
-            { id: 18, cluster: "Reputation", cat: "Strategic", score: 80, likelihood: 60, impact: 95, urgency: "High", drivers: "ESG compliance, PIF audit perception.", warning: "Local content audit frequency rising.", impact_desc: "Exclusion from high-value government tiers.", mitigation: "Transparent ESG/LCL automated platforms." }
+            { id: 1, cluster: "Political Risk", cat: "Macro", score: 42, likelihood: 35, impact: 85, urgency: "Medium", drivers: "Regional geopolitics, budget velocity cycles.", warning: "Regional maritime alerts elevated.", impact_desc: "Budget pivots for non-core Giga projects.", mitigation: "Maintain government liaison; route diversification." },
+            { id: 2, cluster: "Economic Risk", cat: "Macro", score: 76, likelihood: 82, impact: 78, urgency: "High", drivers: "Material CPI inflation, Repo rates, USD-SAR dynamics.", warning: "MEP materials price index hit record high.", impact_desc: "Direct margin erosion on EPC contracts.", mitigation: "Hedging contracts for long-leads; fixed-rate bridge financing." },
+            { id: 3, cluster: "Poly-Economic", cat: "Macro", score: 73, likelihood: 68, impact: 88, urgency: "High", drivers: "L/C friction + Logistics delay interaction.", warning: "L/C processing delays hit 18 days sector-wide.", impact_desc: "Technical mobilization delays for Tier 2 packages.", mitigation: "Stress-testing vendor cash cycle dependencies." },
+            { id: 4, cluster: "Strategic Risk", cat: "Strategic", score: 50, likelihood: 45, impact: 70, urgency: "Medium", drivers: "Portfolio concentration in Riyadh clusters.", warning: "Single-client exposure limits nearing Tier 1 cap.", impact_desc: "Systemic risk if developer funding priorities shift.", mitigation: "Client base diversification across Ministry portfolios." },
+            { id: 5, cluster: "Market Risk", cat: "Strategic", score: 78, likelihood: 90, impact: 70, urgency: "High", drivers: "Hyper-competition for Tier 1 resources.", warning: "Technical bid margins dropping to 4%.", impact_desc: "Systemic SME insolvency risk in giga-hubs.", mitigation: "Niche technical BIM/Modular differentiation focus." },
+            { id: 6, cluster: "Project Delivery", cat: "Operational", score: 92, likelihood: 96, impact: 92, urgency: "High", drivers: "Timeline compression, Pre-Ramadan sprint pressure.", warning: "Milestone slippage reported in 32% of Riyadh portfolio.", impact_desc: "Accumulated LDs and brand damage with PIF.", mitigation: "AI-driven schedule early warning platform deployment." },
+            { id: 7, cluster: "Technical Risk", cat: "Technical", score: 56, likelihood: 48, impact: 80, urgency: "Low", drivers: "Complexity of engineering, SBC compliance snags.", warning: "Technical RFI spike in specialized MEP packages.", impact_desc: "Handover cycle slowdowns.", mitigation: "Integrated 6D BIM technical coordination." },
+            { id: 8, cluster: "Contractual/Claims", cat: "Financial", score: 87, likelihood: 84, impact: 95, urgency: "High", drivers: "LD escalation, Force Majeure validity disputes.", warning: "Claims volume up 34% MoM.", impact_desc: "Cash flow lockdown due to legal friction.", mitigation: "Digitised site record management; claim avoidance desk." },
+            { id: 9, cluster: "Financial Risk", cat: "Financial", score: 91, likelihood: 94, impact: 92, urgency: "Critical", drivers: "DSO stretch, SME technical credit crunch.", warning: "Tier 2 vendor credit limits hit alert thresholds.", impact_desc: "Mobilization failure for Expo technical clusters.", mitigation: "Receivables management acceleration; supply chain finance." },
+            { id: 10, cluster: "Supply Chain", cat: "Operational", score: 95, likelihood: 98, impact: 95, urgency: "Critical", drivers: "Red Sea maritime blackouts, insurance costs.", warning: "Freight rates up 260% for technical components.", impact_desc: "Technical path stoppage due to material stockouts.", mitigation: "120-day technical material buffer; GCC land-bridge use." },
+            { id: 11, cluster: "HSE Risk", cat: "Operational", score: 48, likelihood: 30, impact: 95, urgency: "Low", drivers: "Site overcrowding, shift transition fatigue.", warning: "Fatigue alerts rising for Pre-Ramadan night shifts.", impact_desc: "Fatal incidents, work stoppage, and legal penalties.", mitigation: "Wearable IoT fatigue monitoring platform." },
+            { id: 12, cluster: "Quality/Compliance", cat: "Operational", score: 66, likelihood: 68, impact: 70, urgency: "Medium", drivers: "SBC enforcement, technical deviation audits.", warning: "Snagging volume pre-handover hits localized peak.", impact_desc: "Certificates delay and rework overheads.", mitigation: "Digital QA/QC daily audit checklists." },
+            { id: 13, cluster: "Environmental", cat: "Macro", score: 42, likelihood: 30, impact: 75, urgency: "Low", drivers: "Dust storm cycles, central province shifts.", warning: "Riyadh dust alerts elevated for Q1 close.", impact_desc: "Sensitive asset wear and site production downtime.", mitigation: "Site hardening; accelerated maintenance cycles." },
+            { id: 14, cluster: "HR & Workforce", cat: "Operational", score: 99, likelihood: 100, impact: 95, urgency: "Critical", drivers: "Technical brain drain, Giga-poaching war.", warning: "PM turnover hitting 30% in Central Province.", impact_desc: "Total loss of technical project memory.", mitigation: "Retention loyalty grants; internal PM Sentinel Academy." },
+            { id: 15, cluster: "Digital/Cyber", cat: "Technical", score: 74, likelihood: 58, impact: 85, urgency: "Medium", drivers: "OT ransomware targeting BIM hubs.", warning: "Phishing volume spike on technical finance desks.", impact_desc: "Operational blackout and technical data theft.", mitigation: "Zero-trust network architecture site deployment." },
+            { id: 16, cluster: "Asset/Equipment", cat: "Operational", score: 64, likelihood: 55, impact: 75, urgency: "Low", drivers: "Aging fleet plant, parts scarcity.", warning: "Heavy plant downtime up 21% MoM.", impact_desc: "Production rate drop in earthworks and lifting.", mitigation: "Predictive maintenance local technical caches." },
+            { id: 17, cluster: "Organizational", cat: "Strategic", score: 58, likelihood: 45, impact: 75, urgency: "Medium", drivers: "Decision silos, scaling velocity friction.", warning: "Technical bid approval hit 24-day average.", impact_desc: "Failure to pivot to Vision priorities.", mitigation: "Agile board restructuring for bid approvals." },
+            { id: 18, cluster: "Reputation", cat: "Strategic", score: 82, likelihood: 65, impact: 95, urgency: "High", drivers: "ESG compliance, PIF audit perception.", warning: "Local content audit frequency hits bi-weekly.", impact_desc: "Permanent exclusion from Tier 1 bid lists.", mitigation: "Transparent ESG/LCL automated platforms." }
         ];
 
         const indices = [
-            { name: "Project Delay Index", score: 90, trend: "up" },
-            { name: "Cost Overrun Index", score: 75, trend: "up" },
-            { name: "Supplier Failure Risk", score: 79, trend: "up" },
-            { name: "Cash Flow Stress Index", score: 94, trend: "up" },
-            { name: "HSE Incident Risk", score: 25, trend: "up" },
-            { name: "Contract Dispute Index", score: 84, trend: "up" },
-            { name: "Workforce Poach Index", score: 97, trend: "up" },
-            { name: "Quality Deviation", score: 48, trend: "down" },
-            { name: "Supply Volatility", score: 93, trend: "up" },
-            { name: "Technical Downtime", score: 52, trend: "up" }
+            { name: "Project Delay Index", score: 92, trend: "up" },
+            { name: "Cost Overrun Index", score: 78, trend: "up" },
+            { name: "Supplier Failure Risk", score: 81, trend: "up" },
+            { name: "Cash Flow Stress Index", score: 95, trend: "up" },
+            { name: "HSE Incident Risk", score: 28, trend: "up" },
+            { name: "Contract Dispute Index", score: 85, trend: "up" },
+            { name: "Workforce Poach Index", score: 99, trend: "up" },
+            { name: "Quality Deviation", score: 50, trend: "down" },
+            { name: "Supply Volatility", score: 94, trend: "up" },
+            { name: "Technical Downtime", score: 58, trend: "up" }
         ];
 
         const scenarioData = {
             baseline: {
-                d30: "Peak tendering activity for Riyadh Expo hubs. Shift transition to Ramadan working hours.",
-                d90: "Summer Heat Ban mobilization phase. Logistics friction stabilizing at new highs.",
-                actions: ["Financial: Audit Tier 2 liquidity daily.", "Workforce: Activate senior retention grants.", "Supply: Divert MEP to GCC land ports."]
+                d30: "Peak mobilization for Riyadh Expo clusters. Talent poaching alert active.",
+                d90: "Ramadan shift transition followed by Summer Heat Ban implementation phase.",
+                actions: ["HR: Activate technical staff retention grants.", "Fin: Conduct daily liquidity stress tests on Tier 2 subs.", "Supply: Divert technical procurement to UAE land routes."]
             },
             oil_shack: {
-                d30: "Budget review for infrastructure non-core clusters. Private residential starts pause.",
-                d90: "Liquidity crunch for técnico subs. Pivot exclusively to Expo/Neom core packages.",
-                actions: ["Cash: Lock 6-month staff cache.", "Review: Validate Force Majeure triggers.", "Hiring: Implement absolute freeze."]
+                d30: "Private project freeze. Ministry priority reviews initiated.",
+                d90: "Liquidity crunch for técnico subs. Expo/Neom core packages prioritized.",
+                actions: ["Cash: Lock 6-month staff staff cash buffer.", "Contract: Validate FM triggers across giga-portfolio.", "Hiring: Freeze non-site overhead roles."]
             },
             escalation: {
-                d30: "Red Sea logistics blackout. Insurance premiums hit war-band levels. Tech stops.",
-                d90: "Widespread shutdowns. Site shutdowns expected for 40% of portfolio.",
-                actions: ["Crisis: Activate Executive Crisis Board.", "Supply: Emergency activation of GCC hubs.", "Security: Strategic site asset hardening."]
+                d30: "Red Sea logistics blackout. Air-freight costs hit 500% spike. Path stoppage.",
+                d90: "Project shutdowns for 45% of portfolio. Mass FM declarations expected.",
+                actions: ["Crisis: Activate Executive Crisis Board daily.", "Supply: Emergency activation of GCC land ports.", "Security: Strategic site asset hardening."]
             }
         };
 
@@ -273,15 +274,15 @@
         let periChart, matrixChart;
 
         function initCharts() {
-            // AUTOMATED PERI COMPOSITE CALCULATION
-            const prs = 41; const ers = 75; const pis = 72;
+            // AUTOMATED PERI CALCULATION (Weighted Formula)
+            const prs = 42; const ers = 76; const pis = 73;
             const score = parseFloat(((prs * 0.35) + (ers * 0.40) + (pis * 0.25)).toFixed(1));
             
-            // Logic for automation (Green/Amber/Red)
             let color, label, protocolText;
-            if (score <= 40) { color = '#22c55e'; label = 'LOW'; protocolText = 'Monitoring actions required.'; }
-            else if (score <= 75) { color = '#f59e0b'; label = 'ELEVATED'; protocolText = 'Early mitigation protocols active.'; }
-            else { color = '#ef4444'; label = 'CRITICAL'; protocolText = 'Escalation actions mandatory.'; }
+            if (score <= 40) { color = '#22c55e'; label = 'LOW'; protocolText = 'Monitoring active.'; }
+            else if (score <= 60) { color = '#f59e0b'; label = 'ELEVATED'; protocolText = 'Early mitigation protocols active.'; }
+            else if (score <= 80) { color = '#f97316'; label = 'HIGH'; protocolText = 'Escalation actions required immediately.'; }
+            else { color = '#ef4444'; label = 'CRITICAL'; protocolText = 'Crisis-level command protocols mandatory.'; }
 
             // Update UI
             document.getElementById('periValue').textContent = score;
@@ -309,8 +310,8 @@
                     datasets: [{
                         label: 'Clusters',
                         data: risks.map(r => ({ x: r.likelihood, y: r.impact, r: r.score / 2.5 })),
-                        backgroundColor: risks.map(r => r.score > 88 ? 'rgba(239, 68, 68, 0.7)' : r.score > 75 ? 'rgba(249, 115, 22, 0.7)' : 'rgba(59, 130, 246, 0.7)'),
-                        borderColor: risks.map(r => r.score > 88 ? '#ef4444' : r.score > 75 ? '#f97316' : '#3b82f6'),
+                        backgroundColor: risks.map(r => r.score > 90 ? 'rgba(239, 68, 68, 0.7)' : r.score > 75 ? 'rgba(249, 115, 22, 0.7)' : 'rgba(59, 130, 246, 0.7)'),
+                        borderColor: risks.map(r => r.score > 90 ? '#ef4444' : r.score > 75 ? '#f97316' : '#3b82f6'),
                         borderWidth: 1
                     }]
                 },
@@ -330,7 +331,7 @@
             const panel = document.getElementById('clusterDetail');
             panel.innerHTML = `
                 <div class="animate-fade-in space-y-4">
-                    <div class="flex justify-between items-start">
+                    <div class="flex justify-between items-start border-b border-slate-100 pb-2">
                         <h2 class="text-xl font-black text-slate-900 leading-none tracking-tighter">${r.cluster}</h2>
                         <span class="text-[10px] font-bold px-2 py-1 ${r.score > 80 ? 'bg-red-100 text-red-600' : 'bg-amber-100 text-amber-600'} rounded uppercase tracking-tighter">${r.urgency}</span>
                     </div>
@@ -349,7 +350,7 @@
                         </div>
                     </div>
                     <div class="space-y-4 pt-2">
-                        <div><h4 class="text-[10px] uppercase font-black text-slate-400 mb-1 tracking-widest">Key Drivers</h4><p class="text-xs text-slate-600 leading-relaxed">${r.drivers}</p></div>
+                        <div><h4 class="text-[10px] uppercase font-black text-slate-400 mb-1 tracking-widest">Macro Drivers</h4><p class="text-xs text-slate-600 leading-relaxed">${r.drivers}</p></div>
                         <div><h4 class="text-[10px] uppercase font-black text-blue-500 mb-1 tracking-widest uppercase">Indicator</h4><p class="text-xs text-slate-800 font-bold leading-relaxed">${r.warning}</p></div>
                         <div class="p-4 bg-slate-900 rounded-lg border border-slate-700">
                             <h4 class="text-[10px] uppercase font-black text-amber-500 mb-2 tracking-widest">Mitigation Strategy</h4>
